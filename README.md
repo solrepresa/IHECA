@@ -10,4 +10,4 @@ En este TP se introducen concepciones básicas de estadística y se presenta R c
 
 
 
-![Image description](link-to-image)
+![Presentacion curso](https://github.com/solrepresa/IHECA/blob/master/ICurso%20de%20posgrado.png)
