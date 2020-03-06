@@ -1,0 +1,357 @@
+---
+title: "Analisis exploratorio de datos en R"
+author: "Sol Represa"
+date: "17 de abril del 2018"
+output:
+  rmarkdown::github_document
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ?Qu? es R?
+
+R es un lenguaje de programaci?n pensado por y para estadistas que presenta muchas ventajas: es un lenguaje de c?digo libre, con una gran comunidad de usuarios, presenta actualizaciones constantes, y brinda la posibilidad de automatizar procesos y de personalizar los an?lisis. 
+
+### ?Para qu? sirve?
+
+R proporciona un amplio abanico de herramientas estad?sticas (modelos lineales y no lineales, tests estad?sticos, an?lisis de series temporales, algoritmos de clasificaci?n y agrupamiento, etc.), de c?lculo num?rico y gr?ficas.
+
+### ?De d?nde surge?
+
+R es una implementaci?n del lenguaje de programaci?n S desarrollado en los a?os '70 en Bell Labs por Rick Becker, John Chambers y Allan Wilks. Hay algunas diferencias importantes, pero gran parte del c?digo escrito para S se ejecuta sin alteraciones en R.
+
+S es un proyecto muy importante, utilizado en una gran cantidad de implementaciones comerciales como S-PLUS, SPSS o SAS/STAT. Sin embargo, por ser un c?gido con licencia comercial, su uso requiere de un abono y su actualizaci?n est? restringida a la empresa proveedora.
+
+En 1996, George Ross Ihaka y Robert Gentleman (R & R) del Departamento de Estad?stica de la Universidad de Auckland desarrollan R. R es parte del *GNU Proyect*, un proyecto de colaboraci?n masiva para el desarrollo de software libre (libre para ejecutar, copiar, distribuir, estudiar y modificar), el cual es actualmente mantenido por el *R Development Core Team*, en donde Chambers es parte.
+
+### Webs de cabecera
+
+* La p?gina de R: https://www.r-project.org/
+
+* Documentaci?n oficial: https://cran.r-project.org/manuals.html
+
+* R-Bloggers (750 redactores): https://www.r-bloggers.com
+
+* Paquetes de R: https://cran.r-project.org/web/packages/
+
+* RStudio: https://www.rstudio.com/ide/
+
+***
+
+## Primeros pasos en RStudio
+
+R es un lenguaje interpretado, el usuario normalmente accede por l?neas de comandos o consola. Para facilitar el trabajo con R podemos recurrir a un entorno de desarrollo integrado (IDE). Uno de los m?s usados es [RStudio](http://www.rstudio.com), por su organizaci?n en paneles, los accesos r?pidos y la predicci?n de comandos que facilitan la escritura.
+
+
+![*Paneles de RStudio*](C:\\Users\solre\Desktop\IHECA\rstudio-windows.png){width=40%} 
+
+
+Al entrar a RStudio vemos la pantalla dividida en cuatro ventanas que se pueden personalizar a gusto. En la ventana superior izquierda se encuentra el editor para escribir c?digo R. Por debajo, tenemos la consola de R y la terminal. En la ventana superior derecha aparece un listado de los objetos (tablas, ficheros, vectores, funciones, etc.) con las se trabajaron. Y finalmente, en la ventana inferior derecha tenemos el listado de los archivos en el directorio de trabajo asignado, las gr?ficas generadas, la lista de paquetes y la ayuda. 
+
+### Tips para RStudio
+
+#### Ejecuci?n de las l?neas de comando con ctrl+enter
+
+* Si nos posicionamos sobre la l?nea de comando y apretamos la combinaci?n de teclas crtl+enter podemos ir ejecutando lo que tenemos escrito l?nea a l?nea.
+
+* Si queremos ejecutar toda una secci?n de codigo, podemos seleccionarla con el mouse y apertar ctrl+enter.
+
+#### Completar comandos mediante la tecla de tabulaci?n
+
+* Cuando empezamos a escribir una funci?n podemos apretar la tecla TAB y nos sugiere la funciones que tengan ese nombre
+
+* Una vez escrito un comando, si situamos el cursor entre los par?ntesis y apretamos la tecla TAB se abre una ventana con las principales argumentos de esa funci?n y una ayuda sobre la funci?n de cada argumento.
+
+#### Acceso r?pido a la ayuda con F1
+
+* Cuando deseemos obtener m?s informaci?n sobre una funci?n podemos posicionarnos sobre ella y apretar F1. Entonces, se nos abrir? en el extremo derecho la ayuda sobre la misma.
+
+#### Visualizaci?n de los datos en el ?rea de trabajo
+
+* Con un simple click sobre el nombre de la variable (data frames) del listado de la ventana superior derecha ("Environment"), podemos visualizar la variable como tabla.
+
+
+
+***
+
+## Trabajando con R
+
+### Carga de librer?as
+
+La aplicabilidad de R se puede extender mediante paquetes de funciones. La distribuci?n b?sica contiene aproximadamente 25 paquetes. Por ello, dependiendo de la tarea que deseemos hacer, muchas veces precisamos descargar e instalar nuevas librer?as. 
+
+Los paquetes que utilizaremos son:
+
++ *openxlsx* para cargar los archivos con extensi?n .xlxs
+
++ *openair* para el trabajo de datos de calidad de aire
+
++ *ggplot2* para realizar gr?ficas
+
+
+Hay distintas formas de instalar paquetes, pero por lo general se recurre a CRAN, una red de servidores ftp y web en todo el mundo que almacenan versiones id?nticas y actualizadas de c?digo y documentaci?n para R. Podemos descargar las librer?as desde la p?gina de CRAN o simplemente descargar los paquetes con la funci?n **install.packages()**
+
+```{r, eval=FALSE}
+# Instalar librer?a desde CRAN
+
+install.packages("openxlsx")
+install.packages("openair")
+install.packages("ggplot2") 
+```
+
+Cada vez que deseemos trabajar con un paquete de funciones es preciso llamarlo para tener acceso. Eso lo hacemos con la funci?n **library()** 
+
+````{r , eval=FALSE}
+# LLamar las librer?as 
+
+library(openxlsx)
+library(openair)
+library(ggplot2) 
+```
+
+### Directorio de trabajo
+
+El directorio de trabajo es la carpeta en donde guardaremos nuestros gr?ficos y a donde recurriremos para levantar nuestros datos. 
+Si bien es algo que se deja para lo ?ltimo, es importante pensar en la estructura que tendr? nuestra informaci?n previo a comenzar un proyecto para evitarnos futuros problemas.
+
+```{r, eval=FALSE}
+
+getwd() # Nos da el directorio de trabajo definido
+setwd("D:/IHECA") # Nos sirve para setear el directorio de trabajo
+
+```
+
+### Crear objetos
+
+R es un lenguaje orientado a objetos. Esto nos permite guardar n?meros, listas, tablas, etc. en objetos de distintas clases, sobre los cuales podemos aplicar funciones.
+
+Para la asignaci?n de valores (listas, tablas, etc) a un objeto utilizamos la flechita **<-** caracter?stica de R. Los objetos que vamos creando a lo largo de nuestro trabajo los podemos ver en el panel superior derecho, en la pesta?a "Environment".
+
+
+```{r}
+# R como calculadora
+1+25 
+
+# guardamos el resultado en el objeto a
+a <- 1+25
+
+# llamamos el objeto a
+a   
+
+# podemos realizar operaciones sobre el objeto que guardamos
+a*20 
+
+```
+
+
+Lo mismo podemos hacer con una cadena de texto,
+
+```{r}
+b <- "casa"
+b
+
+substr(b,2,3) # nos devuelve los caracteres que estan entre el lugar 2 y el 3
+
+```
+
+o estructuras m?s complejas como tablas (Data Frame)
+
+```{r}
+c <- data.frame(Nombres=c("julia","luis","carolina"), Notas=c(9,10,7))
+c
+
+c[3,2] #el elemento de la fila 3, columna 2
+orden <- order(c$Notas) # nos da el numero de filas con "Notas" en ?rden mayor-menor
+c[orden,] # nos devuelve la tabla ordenada
+```
+
+
+### Abrir una base de datos
+
+Para abrir una base de datos hay distintas formas. Las funciones m?s usadas son **read.csv()** si tenemos un fichero de tipo texto plano separado por comas, **read_excel()** (paquete "readxl") para archivos .xl o **read.xlsx()** (paquete "openxlsx").
+
+```{r, eval=FALSE}
+??read.xlsx
+
+datos <- read.xlsx("TP2_SO2.xlsx", sheet = 1, startRow = 1)
+
+```
+
+Asumiendo que comenzamos a trabajar con un nuevo dataset, lo primero que nos interesar? saber es qu? tipo de atributos contiene, cu?ntas observaciones, etc. La funci?n **str()** muestra parte del contenido de cada variable. 
+
+```{r, eval=FALSE}
+class(datos) #para conocer la clase de la variable
+str(datos) #nos da la clase de las columnas del data.frame
+
+```
+
+Podemos recurrir tambi?n a funciones como **head()** y **tail()** para obtener los primeros y ?ltimos elementos, respectivamente, de un objeto R.
+
+
+```{r, eval = FALSE}
+names(datos) # arroja los nombres de las variables
+head(datos) # muestra la primera parte de la tabla
+tail(datos)   # muestra el final de la tabla
+
+length(datos) # da el numero de columnas
+nrow(datos)  # da el numero de filas
+
+```
+
+Siempre que abrimos una tabla es recomendable chequear que todas las variables se encuentren en la clase que esperamos:
+
++ *"factor"* para variables categ?ricas 
++ *"numeric"* si es una variable cont?nua
++ *"integer"* para variables discretas
++ *"orderer""factor"* si tenemos una variable ordinal
++ *"logical"* para variables dicotomicas del tipo TRUE-FALSE
+
+```{r, eval=FALSE}
+class(datos$dia)
+
+```
+
+### Trabajo con fechas y horas
+
+Las fechas son algo m?s complejo. Existen dos formatos principales: Posixct y Posixlt
+
++ POSIXct es la fecha expresada en segundos desde el 1 de enero de 1970.
++ POSIXlt es la fecha expresada en un formato de texto, el cual podemos definir.
+
+```{r, eval=FALSE}
+
+datos$date <- seq.POSIXt(from = ISOdate(2012,1,1,0), to = ISOdate(2014,12,31,23), by="hours")
+
+weekdays(datos[1,1])
+months(datos[1,1])
+julian(datos[1,1])
+
+```
+
+La funci?n **format()** nos permite cambiar el formato en el cual est? escrita una fecha. Es importante tener presente el c?digo que utiliza R para representar las distintas formas de codificar una fecha:
+
+Codigo | Valor 
+-------|-------
+%a	| D?a letra abreviado	
+%A	| D?a letra completo
+%d	| D?a (01-31)
+%j	| D?a juliano
+%b	| Mes letra abreviado	
+%B	| Mes letra completo 
+%m	| Mes (0-12)
+%c  | Formato extendido 
+%H	| Hora (0-24)	
+%I	| Horas (0-12)
+%p	| AM/PM local
+%M	| Minutos (0-60)	
+%S	| Segundos (0-60)	
+%w	| D?a de la semana (0-6, 0 = domingo)	
+%U	| Semana del a?o (comienza domingo)
+%W	| Semana del a?o (comienza lunes)
+%x	| D?a local	
+%X	| Hora local 
+%y	| A?o en 2 digitos	
+%Y	| A?o en 4 digitos 
+%z	| Correcci?n de zona horaria	
+%Z	| Zona horaria (caracter)
+
+### Guardar las bases de datos
+
+Para guardar las bases de datos en formato csv, se utiliza la funci?n **write.csv()**
+
+```{r, eval= FALSE}
+# Para guardar las bases de datos
+
+write.csv(datos, "datos.csv", row.names = FALSE, col.names = TRUE)
+
+
+```
+
+Utilizamos el atributo *row.names = FALSE* para evitar guardar los nombres de las filas y *col.names = TRUE* para conservar los nombres de las columnas.
+
+
+***
+
+## Analisis exploratorio de datos
+
+ R cuenta con una gran cantidad de funciones que permiten obtener informaci?n descriptiva sobre la distribuci?n de nuestros datos. 
+
+### Par?metros descriptivos
+
+R cuenta con multitud de funciones de tipo estad?stico, entre ellas las que permiten obtener informaci?n descriptiva sobre la distribuci?n de los valores. La sintaxis de las funciones de estad?stica descriptiva m?s comunes pueden verse a continuaci?n. El tratamiento de valores ausentes es id?ntico en todas las funciones de este grupo.
+
+```{r, eval=FALSE}
+range(datos$so2, na.rm = TRUE)      # rango
+sd(datos$so2, na.rm = TRUE)         # desviacion tipica
+var(datos$so2, na.rm = TRUE)        # varianza
+mean(datos$so2, na.rm = TRUE)       # media
+median(datos$so2, na.rm = TRUE)     # mediana
+quantile(datos$so2, probs = 0.90, na.rm = TRUE)  # Cuantil del 90%
+
+summary(datos$so2)                  
+```
+
+La funci?n **summary()** es muy importante porque ofrece un resumen global del contenido de cada variable: su valor m?nimo, m?ximo y medio, mediana, cuartiles y, en el caso de las variables qualitativas, el n?mero de veces que aparece cada valor posible.
+
+En el caso que querramos identificar el d?a donde se encuentra la mayor concentraci?n deberemos utilizar la funci?n **which()**. Esta funci?n nos devuelve los valores verdaderos para la funci?n l?gica que escribamos.
+
+En nuestro caso, consultaremos el d?a de nuestro set de datos en el que la concentraci?n de SO~2~ fue m?xima:
+
+```{r, eval= FALSE}
+which(datos$so2 == max(datos$so2, na.rm=TRUE)) # Atenci?n! nos devuelve el n?mero de la fila
+datos[21732,]
+
+```
+
+### Gr?ficos exploratorios
+
+#### Histogramas
+Cuando es necesario analizar la distribuci?n de una variable con un gran conjunto de valores, una de las herramientas habituales es el histograma. Se trata de un gr?fico de barras con una configuraci?n espec?ifica: el rango de los valores a representar se divide en intervalos, el ancho de las barras es proporcional a la amplitud de cada intervalo y su altura lo es a la frecuencia del rango de valores representados (el n?mero de casos en que la variable toma alg?n valor en dicho intervalo).
+Habitualmente la amplitud de los intervalos es id?ntica, por lo que las barras tendr?an la misma anchura, caso en el que prestar?amos atenci?n especialmente a la altura de cada barra.
+
+
+```{r, eval=FALSE}
+hist(datos$so2, main="Histograma", ylab= "Frecuencia", xlab = expression("Concentracion de SO"[2]))
+  
+```
+
+Los par?metros de configuraci?n son los siguientes:
+* **breaks**: Este par?metro puede ser un n?mero entero indicando el n?mero de intervalos que se desea obtener en el histograma, as? como un vector de valores especificando los puntos de divisi?n de dichos intervalos. Tambi?n puede ser una cadena, especificando el algoritmo que se utilizar? para calcular
+los intervalos, asi como el nombre de una funci?n que se usar?ia para realizar dicho c?lculo.
+
+* **labels**: Puede tomar un valor l?gico, que en caso de ser TRUE mostrar?a sobre cada barra del histograma su frecuencia, o bien un vector con tantas etiquetas como intervalos. Esas etiquetas se mostrar?ian sobre las barras.
+
+* **freq**: Por defecto el eje Y muestra la frecuencia, el conteo de n?mero de casos. D?ndole el valor FALSE se mostrar?a la densidad en lugar de la frecuencia. 
+
+* **right**: Por defecto toma el valor TRUE, de forma que los intervalos sean abiertos por la izquierda y cerrados por la derecha.
+
+* **plot**: Controla la visualizaci?n de la gr?fica. D?ndole el valor FALSE solamente se devolver? la estructura de datos generada por la funci?n hist(), sin mostrar el histograma.
+
+
+#### Box-plot
+
+Este tipo de diagrama, conocido como *gr?fica de cajas y bigotes* o *box-and-whisker plot*, permite apreciar de un vistazo c?mo se distribuyen los valores de una variable, si est?n m?s o menos concentrados o dispersos respecto a los cuartiles centrales, y si existen valores extremos.
+
+```{r, eval=FALSE}
+boxplot(datos$so2, horizontal = TRUE, xlab = expression("Concentracion de SO"[2]) )
+
+```
+
+Mediante los par?metros podemos modificar:
+* **range**: Un n?mero entero que act?a como multiplicador del rango intercuartil, representado por la caja, para determinar el rango hasta el que se extender?n los bigotes. Si este par?metro toma el valor 0 los bigotes se extienden hasta los extremos.
+* **outline**: Determina si se dibujar?n o no los valores an?malos, aquellos no cubiertos por el rango de los bigotes.
+* **horizontal**: Dando el valor TRUE a este par?metro la gr?fica se rotar? 90 grados, dibuj?ndose las cajas de forma horizontal.
+* **notch**: Si se le da el valor TRUE, las cajas se dibujar?n con una muesca respecto al valor central a fin de facilitar la comparaci?n con las dem?s cajas.
+* **width**: Un vector con tantos elementos como cajas van a dibujarse, estableciendo el ancho relativo de unas respecto a otras.
+
+***
+
+### Ayuda
+
+> Si Ud no sabe algo, googlee
+
+
+Una genialidad de la comunidad de R son los machetes [(*cheatsheet*)](https://www.rstudio.com/resources/cheatsheets/) en donde podemos encontrar mucha informaci?n resumida en claras infograf?as.
